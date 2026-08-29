@@ -2,5 +2,6 @@
 *
 
 !.gitignore
+!BubbleWindow.Usage.cs
 #峰谷指示器完成
 #用量查询完成
