@@ -104,12 +104,10 @@ public partial class BubbleWindow
         UsageCard.MouseLeftButtonUp += OnUsageCardMouseUp;
         UsageCard.MouseLeave += OnUsageCardMouseLeave;
 
-        // 连接线覆盖层跟随气泡尺寸，保证覆盖整个用量面板
-        BubbleHost.SizeChanged += (_, _) =>
-        {
-            OverlayCanvas.Width = BubbleHost.ActualWidth;
-            OverlayCanvas.Height = BubbleHost.ActualHeight;
-        };
+        // 注意：OverlayCanvas（连接线覆盖层）不做任何显式 Width/Height 同步 ——
+        // 它以默认 Stretch 对齐铺满 BubbleHost；若在此把它钉成宿主当前尺寸，
+        // Canvas 的 DesiredSize 会反哺 Grid 测量，导致宿主只涨不缩（历史 bug：
+        // 右下角偏离窗口中心 + banner 按开过的最大尺寸全覆盖）
 
         // 用量饼图段外径缓动（悬停突出显示）
         _segmentAnimTimer.Tick += (_, _) => TickUsageSegmentAnim();
@@ -155,12 +153,10 @@ public partial class BubbleWindow
 
         if (enable)
         {
-            // 进入用量模式：隐藏普通气泡 / 手鼓猫 / banner，显示用量面板
+            // 进入用量模式：旧页面快速淡出、用量面板快速淡入（尺寸过渡见 TransitionToPage），暂停峰谷刷新
             _timer.Stop();
-            BongoPanel.Visibility = Visibility.Collapsed;
-            Badge.Visibility = Visibility.Collapsed;
             BannerOverlay.Visibility = Visibility.Collapsed;
-            UsagePanel.Visibility = Visibility.Visible;
+            TransitionToPage(UsagePanel);
 
             // 用量模式专用 banner 外观（覆盖大面板）：圆角与字号与 badge 模式不同
             BannerColor.CornerRadius = new CornerRadius(9);
@@ -180,12 +176,9 @@ public partial class BubbleWindow
             _usageCountdownTimer.Stop();
             HideUsageBanner();
             HideUsageRowHighlight();
-            UsagePanel.Visibility = Visibility.Collapsed;
             BannerColor.CornerRadius = new CornerRadius(7);
             BannerText.FontSize = 56;
-            Badge.Visibility = Visibility.Visible;
-            Badge.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Badge.UpdateLayout(); // 立即完成测量，窗口按真实尺寸重排，避免用 0 尺寸裁剪 / 跳动
+            TransitionToPage(Badge); // 用量面板淡出、气泡淡入，右/下边缘钉住、左/上边缘滑回
             _timer.Start();
             Refresh();
             RequestHostLayout();
