@@ -3,5 +3,7 @@
 
 !.gitignore
 !BubbleWindow.Usage.cs
+!BubbleWindow.Raffle.cs
+#raffle是坏的不能用！
 #峰谷指示器完成
 #用量查询完成

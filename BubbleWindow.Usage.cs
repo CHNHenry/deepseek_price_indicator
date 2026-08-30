@@ -409,7 +409,7 @@ public partial class BubbleWindow
     {
         if (FindUsageSegment(sender as Path) is not { } seg) return;
         seg.Hovered = true;
-        seg.Path.Cursor = Cursors.Hand;
+        seg.Path.Cursor = Cursors.Arrow;
         _lineToSegment = null; // 直接悬停饼图段：连接线指向鼠标
         ShowUsageRowHighlight(seg);
         UpdateUsageConnectLine(seg, e.GetPosition(OverlayCanvas));
