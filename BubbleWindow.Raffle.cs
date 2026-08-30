@@ -38,6 +38,9 @@ public partial class BubbleWindow
     private DateTime _targetStartAt;      // 目标选中时刻（激活进度计时起点）
     private double _fastDieFromAlpha;     // 快速消亡起始 alpha
 
+    // 注意：RaffleBrand 必须声明在 RaffleBrush 之前 —— 静态字段按文本顺序初始化，
+    // 否则 CreateRaffleBrush 读到的 RaffleBrand 还是 default(Color)（全透明），字符永远看不见
+    private static readonly Color RaffleBrand = Color.FromRgb(0x39, 0x64, 0xFE);
     private static readonly Brush RaffleBrush = CreateRaffleBrush();
     private static readonly Typeface RaffleTypeface =
         new(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
@@ -437,8 +440,6 @@ public partial class BubbleWindow
         if (gen != _bannerGeneration) return;
         HideBanner();
     }
-
-    private static readonly Color RaffleBrand = Color.FromRgb(0x39, 0x64, 0xFE);
 
     private static Brush CreateRaffleBrush()
     {
